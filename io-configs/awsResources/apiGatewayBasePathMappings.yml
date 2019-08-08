@@ -1,0 +1,6 @@
+Type: AWS::ApiGateway::BasePathMapping
+Properties:
+  BasePath: ''
+  DomainName: "#{ApiGatewayDomain}"
+  RestApiId: "#{ApiGatewayRestApi}"
+  Stage: "#{ApiGatewayStage}"

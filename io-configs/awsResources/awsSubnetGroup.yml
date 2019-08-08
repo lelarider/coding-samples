@@ -1,0 +1,7 @@
+Type: AWS::ElastiCache::SubnetGroup
+Properties:
+  Description: Configuration app subnet group and group name
+  SubnetIds:
+    Fn::Split:
+      - ","
+      - Fn::ImportValue: vpc-${self:provider.stage}-PrivateSubnetIds

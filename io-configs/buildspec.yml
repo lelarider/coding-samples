@@ -1,0 +1,19 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay&
+      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+  pre_build:
+    commands:
+      - npm install -g serverless@1.35.1
+      - npm install
+      - npm i serverless-domain-manager
+      - npm i serverless-plugin-bind-deployment-id
+      - sls plugin install -n serverless-pseudo-parameters
+      - sls plugin install -n serverless-python-requirements
+      - sls plugin install -n serverless-wsgi
+  build:
+    commands:
+      - SLS_DEBUG=* serverless print
+      - SLS_DEBUG=* serverless deploy --verbose

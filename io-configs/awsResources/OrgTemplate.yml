@@ -1,0 +1,14 @@
+Type: AWS::DynamoDB::Table
+Properties:
+  TableName: config_tempalte
+  AttributeDefinitions:
+    - AttributeName: key
+      AttributeType: S
+  KeySchema:
+    - AttributeName: key
+      KeyType: HASH
+  ProvisionedThroughput:
+    ReadCapacityUnits: 5
+    WriteCapacityUnits: 1
+  StreamSpecification:
+    StreamViewType: NEW_AND_OLD_IMAGES

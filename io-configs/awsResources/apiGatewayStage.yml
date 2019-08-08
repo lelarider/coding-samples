@@ -1,0 +1,12 @@
+Type: AWS::ApiGateway::Stage
+Properties:
+  StageName: ${self:provider.stage}
+  DeploymentId: "#{__deployment__}"
+  RestApiId: "#{ApiGatewayRestApi}"
+  MethodSettings:
+    -
+      ResourcePath: "/*"
+      HttpMethod: "*"
+      LoggingLevel: INFO
+      DataTraceEnabled: true
+      MetricsEnabled: true

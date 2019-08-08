@@ -1,0 +1,16 @@
+{
+  "name": "npr",
+  "version": "1.0.0",
+  "description": "Scrape craigslist for apartments",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "highland": "^2.13.4",
+    "node-craigslist": "^2.0.0",
+    "yargs": "^13.2.4"
+  }
+}

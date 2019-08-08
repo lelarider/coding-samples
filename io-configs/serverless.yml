@@ -1,0 +1,84 @@
+service:
+  name: io-configs
+
+provider:
+  name: aws
+  region: ${opt:region, env:SERVERLESS_REGION, "us-east-1"}
+  stage: ${opt:stage, env:SERVERLESS_STAGE, "prod"}
+  endpointType: regional
+  apiKeys:
+    - ${self:custom.defaults.apiKey}
+  runtime: python3.6
+  memorySize: 512
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:*"
+        - "*"
+    - Effect: "Allow"
+      Action:
+        - sns:*
+      Resource:
+        - "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:*"
+        - "*"
+  environment:
+    API_KEY: ${self:custom.defaults.apiKey}
+    FLASK_ENV: prod
+    SNS_ARN: ${self:custom.defaults.snsTopicArn}
+  vpc:
+    securityGroupIds:
+      - Fn::ImportValue: vpc-${self:provider.stage}-VpcDefaultSecurityGroup
+    subnetIds:
+      Fn::Split:
+        - ","
+        - Fn::ImportValue: vpc-${self:provider.stage}-PrivateSubnetIds
+
+
+functions:
+  app:
+    handler: wsgi.handler
+    timeout: 30
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
+  snsMessages:
+    handler: lambdas.handler
+    events:
+      - stream:
+          type: dynamodb
+          arn:
+            Fn::GetAtt:
+              - orgConfig
+              - StreamArn
+            
+resources:
+  Resources:
+    VpcsTable: ${file(./awsResources/VpcsTable.yml)}
+    OrgConfigs: ${file(./awsResources/OrgConfigs.yml)}
+    OrgTemplate: ${file(./awsResources/OrgTemplate.yml)}
+    SnsVpcPingTopic: ${file(./awsResources/SnsVpcPingTopic.yml)}
+    ApiGatewayDomain: ${file(./awsResources/apiGatewayDomain.yml)}
+    ApiGatewayStage: ${file(./awsResources/apiGatewayStage.yml)}
+    ApiGatewayBasePathMappings: ${file(./awsResources/apiGatewayBasePathMappings.yml)}
+
+plugins:
+  - serverless-plugin-bind-deployment-id
+  - serverless-pseudo-parameters
+  - serverless-python-requirements
+  - serverless-wsgi
+
+custom:
+  defaults:
+    apiKey: ${ssm:/configurations/api_key~true}
+    snsTopicArn:
+      Ref: snsVpcPingTopic
+  wsgi:
+    app: application.app
+    packRequirements: false
+  pythonRequirements:
+    dockerizePip: true
+    pipCmdExtraArgs:
+    - --extra-index-url https://internal/pypi
+    

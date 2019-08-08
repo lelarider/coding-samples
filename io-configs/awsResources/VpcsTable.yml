@@ -1,0 +1,12 @@
+Type: AWS::DynamoDB::Table
+Properties:
+  TableName: config-vpcs
+  AttributeDefinitions:
+    - AttributeName: vpc
+      AttributeType: S
+  KeySchema:
+    - AttributeName: vpc
+      KeyType: HASH
+  ProvisionedThroughput:
+    ReadCapacityUnits: 1
+    WriteCapacityUnits: 1

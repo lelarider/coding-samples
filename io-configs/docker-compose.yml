@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  config_application:
+    build:
+      dockerfile: dockerfile
+      context: .
+    restart: on-failure
+    ports:
+      - '5000:5000'
+    environment:
+      FLASK_ENV: dev
+      API_KEY: `API_KEY_HERE`
+      AWS_CONFIG_FILE: /credentials
+    volumes:
+      - ~/.aws/credentials:/credentials:ro
+      - ./application.py:/config_application/application.py:ro
+      - ./config:/config_application/config:ro

@@ -1,0 +1,6 @@
+FROM python:3.6.6
+WORKDIR /config_application
+COPY requirements* /config_application/
+RUN pip install -r requirements.txt
+COPY . /config_application/
+CMD python application.py

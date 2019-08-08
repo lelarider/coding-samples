@@ -1,0 +1,4 @@
+Type: AWS::SNS::Topic
+Properties:
+  DisplayName: SNS VPC Ping Topic
+  TopicName: ${self:service}-${self:provider.stage}-messages
